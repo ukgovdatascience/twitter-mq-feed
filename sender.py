@@ -38,7 +38,9 @@ class CustomStreamListener(tweepy.StreamListener):
         self.api = api
         super(tweepy.StreamListener, self).__init__()
 
-
+    # this class defines a number of events and actions, eg. below
+    # when data is received from the API we call on_data() and on_error
+    # is called when we get an error so we can print the code.
     def on_data(self, tweet):
     	try: 
 
@@ -52,15 +54,18 @@ class CustomStreamListener(tweepy.StreamListener):
 
     def on_error(self, status_code):
 	   print 'An error has occurred! Status = %s' % status_code
-        return True # Don't kill the stream
+       return True # Don't kill the stream
 
     def on_timeout(self):
 	   print 'Snoozing...ZzZzZzzzz'
-        return True # Don't kill the stream
+       return True # Don't kill the stream
 
     def on_disconnect(self, notice):
-        print 'Disconnected: %s' % notice
-	   return False
+       print 'Disconnected: %s' % notice
+	   return False # Don't kill the stream
 
+# start the stream, using the stream listener class that we define above
 sapi = tweepy.streaming.Stream(auth, CustomStreamListener(api))
+
+# start filtering the stream
 sapi.filter(track=keywords, stall_warnings=True)

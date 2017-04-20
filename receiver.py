@@ -3,18 +3,26 @@ import pika
 import pymongo
 import json
 
-# initialise the queue
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
-
-# declare the channel and queue name
-channel.queue_declare(queue='<your_queue_name>')
-
+# Try to connect to the RabbitMQ server
 try: 
-	self.db = pymongo.MongoClient().<your_db_name>
-except: 
-	print 'Could not set the database'
+	# create the connection and channel
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost')) 
+    channel = connection.channel() 
 
+    # Create a queue called <your_queue_name> 
+    channel.queue_declare(queue='<your_queue_name>') 
+
+except Exception as err:
+    print err
+
+# try to connect to the mongodb server
+try: 
+	db = pymongo.MongoClient().<your_db_name>
+except Exception as err:
+    print err
+
+
+# this is the callback function we will use to insert the tweets into mongodb
 def callback(ch, method, properties, body):
 	# can choose to print tweet here - prints the json
     # print(" [x] Received %r" % body)
@@ -22,7 +30,7 @@ def callback(ch, method, properties, body):
 
     	# insert the tweet into collection called 'tweets' 
     	# (so <your_db_name>.tweets.count() will tell you how many records)
-        self.db.tweets.insert(json.loads(tweet))
+        db.tweets.insert(json.loads(tweet))
 
     except Exception as err:
         print err
